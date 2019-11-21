@@ -24,3 +24,5 @@ Remarks:
 * The code is very chaotic and was never really meant for public. Sorry to freak you out over it
 * Any bugs are always welcome reporting, it looks to be working fine but improvements are appreciated.
 * Enjoy!
+
+Any further questions or remarks can be sent to u/L_I-Am
