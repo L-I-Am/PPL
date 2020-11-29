@@ -1,4 +1,25 @@
 # Ping Pong Led Clock
+
+# Now updated to use one platform isntead of two!
+
+The newest update on this project uses only one ESP32. The only code you need to adapt is the Wi-Fi-SSID and PW.
+
+Features:
+* Uses a real-time clock which gets the time even without Wi-Fi connection (has to be connected once te set the time but will persist over power-cycles)
+* has a web-interface at URL: clock.local    This can be used to adjust the mode, brightness, foreground color, background color, blinking, raindrop speed and raindrop amount.
+* 4 different modes: Time, Temperature (uses a temperature sensor in the contraption), Fire (ambient fire), Raindrops
+
+
+
+
+
+
+
+
+
+
+If for any reason, you still like to use the old code on Arduino Uno and ESP8266:
+
 This project is made for a combination of an Arduino and an ESP connected through UART.
 The Led_example code is meant for the Arduino while the WiFiScan is coded for an ESP. 
 
