@@ -2,6 +2,9 @@
 
 # Now updated to use one platform isntead of two!
 
+This project is made for the instructable: https://www.instructables.com/Ping-Pong-Ball-LED-Clock/
+The version I made has a different way of attaching the leds which results in the code not being compatible with the newer instructable but it could be easily ported to support both versions. The main difference is the sequence of the leds but all the logic built on top of it can still be used. If you need any help with this, don't hesitate to contact me on here or on reddit: u\L_I-Am
+
 The newest update on this project uses only one ESP32. The only code you need to adapt is the Wi-Fi-SSID and PW.
 
 Features:
