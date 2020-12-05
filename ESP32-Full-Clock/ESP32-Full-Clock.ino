@@ -25,6 +25,7 @@ CRGB leds[NUM_LEDS];
 bool led_FG[NUM_LEDS];
 
 #define UPDATES_PER_SECOND 30
+#define MILLIS_PER_SECOND 1000
 
 #include "DHT.h"
 #define DHTPIN 2
@@ -43,6 +44,8 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", 7200, 60000); //7200 seconds of utc
 
 /*server settings variables*/
 WebServer server(80);
+
+bool blink_on = true;
 
 bool blink = true;
 uint8_t color_preset_f = 0xFF;
@@ -63,16 +66,12 @@ CRGBPalette16 timePalette = LavaColors_p;
 TBlendType    timeBlending = LINEARBLEND;
 
 static uint8_t startIndex = 0;
-static uint8_t time_count = 0;
-static uint8_t second_counter = 0;
 
 static uint8_t fire_height[20];
 
 /* show current temperature */
 float original_temp = 0;
 int8_t temp = 0;
-
-bool updated = false;
 
 bool firstFire;
 bool firstWater = true;
@@ -284,7 +283,16 @@ void show_all() {
   FastLED.show();
 }
 
+unsigned long last_update_time       = 0;
+unsigned long last_blink_time        = 0;
+unsigned long last_temperature_time  = 0;
+unsigned long last_fire_set_time     = 0;
+unsigned long last_water_set_time    = 0;
+
 void loop() {  
+  if(millis() < (last_update_time + (MILLIS_PER_SECOND / UPDATES_PER_SECOND)))
+    return;
+  last_update_time = millis();
   if(!first_send && check_connection()) {
     if(first_connect) {
       set_time_server();
@@ -308,37 +316,35 @@ void loop() {
 
   switch(current_mode) {
     case mode_time:
-      blink_seconds(time_count < (UPDATES_PER_SECOND / 2));
+      if(millis() > (last_blink_time + MILLIS_PER_SECOND / 2)) { //update every half second
+        blink_on = !blink_on;
+        last_blink_time = millis();
+      }
+      blink_seconds(blink_on);
   
       set_time(t.hour, t.min);
       break;
     case mode_temp:
-      if(second_counter % 2 == 1){
-        if(!updated) {
-          update_temp();
-          updated = true;
-        }
-      } else
-        updated = false;
+      if(millis() > (last_temperature_time + 2 * MILLIS_PER_SECOND)) { //update every 2 seconds
+        update_temp();
+        last_temperature_time = millis();
+      }
       break;
     case mode_fire:
-      if(time_count % (UPDATES_PER_SECOND/10) == 0)
+      if(millis() > (last_fire_set_time + MILLIS_PER_SECOND / 10)) { //update every 1/10 second
         set_fire();
+        last_fire_set_time = millis();
+      }
       break;
     case mode_water_drips:
-      if(time_count % (UPDATES_PER_SECOND / water_speed) == 0)
+      if(millis() > (last_water_set_time + MILLIS_PER_SECOND / water_speed)) { //update every 1/water_speed second
         set_water_animation();
+        last_water_set_time = millis();
+      }
       break;
   }
 
   show_all();
-
-  delay(1000/UPDATES_PER_SECOND);
-  time_count++;
-  if(time_count == UPDATES_PER_SECOND) {
-    time_count = 0;
-    second_counter++;
-  }
 }
 
 bool posted = false;
